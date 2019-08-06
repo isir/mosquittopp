@@ -53,7 +53,7 @@ std::shared_ptr<Subscription> Client::subscribe(std::string pattern, QOS qos)
     return ptr;
 }
 
-void Client::publish(std::string topic, const void* payload, unsigned int payload_len, QOS qos, bool retain)
+void Client::publish(std::string topic, const void* payload, std::size_t payload_len, QOS qos, bool retain)
 {
     mosquitto_publish(_con_helper._token, nullptr, topic.c_str(), static_cast<int>(payload_len), payload, qos, retain);
 }

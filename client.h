@@ -33,7 +33,7 @@ public:
     void process();
 
     std::shared_ptr<Subscription> subscribe(std::string pattern, QOS qos = QoS0);
-    void publish(std::string topic, const void* payload, unsigned int payload_len, QOS qos = QoS0, bool retain = false);
+    void publish(std::string topic, const void* payload, std::size_t payload_len, QOS qos = QoS0, bool retain = false);
     inline void publish(std::string topic, std::string payload, QOS qos = QoS0, bool retain = false)
     {
         publish(topic, payload.c_str(), payload.length(), qos, retain);
