@@ -38,7 +38,7 @@ void Client::set_login_info(std::string username, std::string password)
 
 std::shared_ptr<Subscription> Client::subscribe(std::string pattern, QOS qos)
 {
-    std::lock_guard lock(_con_helper._sub_mutex);
+    std::lock_guard<std::mutex> lock(_con_helper._sub_mutex);
     std::shared_ptr<Subscription> ptr;
     if (mosquitto_sub_topic_check(pattern.data()) == MOSQ_ERR_SUCCESS) {
         mosquitto_subscribe(_con_helper._token, nullptr, pattern.data(), qos);

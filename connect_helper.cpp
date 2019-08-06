@@ -38,7 +38,7 @@ ConnectHelper::ConnectHelper()
             _queue.pop();
             lock.unlock();
 
-            std::lock_guard lg(_sub_mutex);
+            std::lock_guard<std::mutex> lg(_sub_mutex);
             bool result;
             for (auto s : _subscriptions) {
                 mosquitto_topic_matches_sub(s->pattern().data(), msg.topic, &result);
@@ -66,7 +66,7 @@ ConnectHelper::~ConnectHelper()
 
 void ConnectHelper::handle_message_received(const mosquitto_message* msg)
 {
-    std::lock_guard lock(_queue_mutex);
+    std::lock_guard<std::mutex> lock(_queue_mutex);
     mosquitto_message dst;
     mosquitto_message_copy(&dst, msg);
     _queue.push(dst);
