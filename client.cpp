@@ -1,7 +1,7 @@
 #include "client.h"
 #include <stdexcept>
 
-namespace Mosquitto {
+namespace Mosquittopp {
 
 LibraryWrapper Client::_lib_wrapper;
 ConnectHelper Client::_con_helper;

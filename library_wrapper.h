@@ -1,7 +1,7 @@
 #ifndef LIBRARY_WRAPPER_H
 #define LIBRARY_WRAPPER_H
 
-namespace Mosquitto {
+namespace Mosquittopp {
 
 class LibraryWrapper {
 public:

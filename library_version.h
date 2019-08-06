@@ -1,7 +1,7 @@
 #ifndef LIBRARY_VERSION_H
 #define LIBRARY_VERSION_H
 
-namespace Mosquitto {
+namespace Mosquittopp {
 
 struct LibraryVersion {
     int major;

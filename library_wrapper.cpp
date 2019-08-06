@@ -1,7 +1,7 @@
 #include "library_wrapper.h"
 #include "mosquitto.h"
 
-namespace Mosquitto {
+namespace Mosquittopp {
 
 LibraryWrapper::LibraryWrapper()
 {

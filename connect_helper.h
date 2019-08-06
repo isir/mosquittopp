@@ -10,7 +10,7 @@
 #include "mosquitto.h"
 #include "subscription.h"
 
-namespace Mosquitto {
+namespace Mosquittopp {
 
 class ConnectHelper {
 public:

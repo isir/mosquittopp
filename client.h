@@ -5,7 +5,7 @@
 #include "library_wrapper.h"
 #include "connect_helper.h"
 
-namespace Mosquitto {
+namespace Mosquittopp {
 
 class Client {
 public:

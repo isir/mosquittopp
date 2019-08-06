@@ -6,7 +6,7 @@
 #include <mutex>
 #include <functional>
 
-namespace Mosquitto {
+namespace Mosquittopp {
 
 class Subscription {
     friend class ConnectHelper;

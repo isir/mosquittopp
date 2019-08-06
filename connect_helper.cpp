@@ -1,6 +1,6 @@
 #include "connect_helper.h"
 
-namespace Mosquitto {
+namespace Mosquittopp {
 
 static void message_callback(struct mosquitto*, void* obj, const mosquitto_message* msg)
 {

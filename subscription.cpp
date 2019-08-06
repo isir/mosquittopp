@@ -1,6 +1,6 @@
 #include "subscription.h"
 
-namespace Mosquitto {
+namespace Mosquittopp {
 
 Subscription::Subscription(std::string pattern)
     : _pattern(pattern)
