@@ -1,9 +1,9 @@
 #ifndef MOSQUITTO_CLIENT_H
 #define MOSQUITTO_CLIENT_H
 
+#include "connect_helper.h"
 #include "library_version.h"
 #include "library_wrapper.h"
-#include "connect_helper.h"
 
 namespace Mosquittopp {
 

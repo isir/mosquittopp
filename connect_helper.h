@@ -1,14 +1,14 @@
 #ifndef CONNECT_HELPER_H
 #define CONNECT_HELPER_H
 
-#include <thread>
-#include <condition_variable>
-#include <atomic>
-#include <mutex>
-#include <vector>
-#include <queue>
 #include "mosquitto.h"
 #include "subscription.h"
+#include <atomic>
+#include <condition_variable>
+#include <mutex>
+#include <queue>
+#include <thread>
+#include <vector>
 
 namespace Mosquittopp {
 
