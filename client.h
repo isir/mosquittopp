@@ -23,6 +23,11 @@ public:
     Client();
     ~Client();
 
+    bool connect(std::string hostname, int port);
+    void disconnect();
+
+    bool connected();
+
     static LibraryVersion lib_version();
 
     void set_will(std::string topic, std::string payload, QOS qos = QoS0, bool retain = true);
@@ -40,10 +45,11 @@ public:
     }
 
 private:
+    std::shared_ptr<ConnectHelper> _con_helper;
+
     static LibraryWrapper _lib_wrapper;
-    static ConnectHelper _con_helper;
 };
 
-} // namespace Mosquitto
+} // namespace Mosquittopp
 
 #endif // MOSQUITTO_CLIENT_H

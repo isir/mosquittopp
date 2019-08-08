@@ -1,6 +1,7 @@
 #ifndef CONNECT_HELPER_H
 #define CONNECT_HELPER_H
 
+#include "message.h"
 #include "mosquitto.h"
 #include "subscription.h"
 #include <atomic>
@@ -14,21 +15,44 @@ namespace Mosquittopp {
 
 class ConnectHelper {
 public:
+    enum Status {
+        CONNECTED,
+        UNACCEPTABLE_PROTOCOL_VERSION,
+        IDENTIFIER_REJECTED,
+        BROKER_UNAVAILABLE,
+        CLEAN_DISCONNECT,
+        UNEXPECTED_DISCONNECT,
+        UNKNOWN
+    };
+
     friend class Client;
+    friend void message_callback(struct mosquitto*, void*, const mosquitto_message*);
+    friend void connect_callback(struct mosquitto*, void*, int);
+    friend void disconnect_callback(struct mosquitto*, void*, int);
 
     ConnectHelper();
     ~ConnectHelper();
 
-    void handle_message_received(const mosquitto_message* msg);
+    bool connect(std::string hostname, int port);
+    void disconnect();
+
+    Status status();
 
 private:
+    void start_thread();
+    void stop_thread();
+
+    void handle_message_received(Message msg);
+
     struct mosquitto* _token;
+
+    Status _status;
 
     std::thread _thread;
     std::atomic<bool> _thread_condition;
     std::condition_variable _cv;
 
-    std::queue<mosquitto_message> _queue;
+    std::queue<Message> _queue;
     std::mutex _queue_mutex;
     std::vector<std::shared_ptr<Subscription>> _subscriptions;
     std::mutex _sub_mutex;

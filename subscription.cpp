@@ -13,11 +13,11 @@ void Subscription::remove_callbacks(void* object)
     _callbacks.erase(object);
 }
 
-void Subscription::handle_message_received(std::string payload)
+void Subscription::handle_message_received(Message msg)
 {
     std::lock_guard<std::mutex> lock(_mtx);
     for (auto cb : _callbacks) {
-        cb.second(payload);
+        cb.second(msg);
     }
 }
 

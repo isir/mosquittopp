@@ -1,10 +1,9 @@
 #include "client.h"
-#include <stdexcept>
+#include "connect_factory.h"
 
 namespace Mosquittopp {
 
 LibraryWrapper Client::_lib_wrapper;
-ConnectHelper Client::_con_helper;
 
 Client::Client()
 {
@@ -12,6 +11,27 @@ Client::Client()
 
 Client::~Client()
 {
+}
+
+bool Client::connect(std::string hostname, int port)
+{
+    _con_helper = ConnectFactory::from_identifier(hostname + ":" + std::to_string(port));
+    return _con_helper->connect(hostname, port);
+}
+
+void Client::disconnect()
+{
+    if (connected()) {
+        _con_helper->disconnect();
+    }
+}
+
+bool Client::connected()
+{
+    if (!_con_helper) {
+        return false;
+    }
+    return _con_helper->status() == ConnectHelper::CONNECTED;
 }
 
 LibraryVersion Client::lib_version()
@@ -23,38 +43,56 @@ LibraryVersion Client::lib_version()
 
 void Client::set_will(std::string topic, std::string payload, QOS qos, bool retain)
 {
-    mosquitto_will_set(_con_helper._token, topic.data(), static_cast<int>(payload.length()), reinterpret_cast<void*>(const_cast<char*>(payload.data())), qos, retain);
+    if (!connected()) {
+        return;
+    }
+    mosquitto_will_set(_con_helper->_token, topic.data(), static_cast<int>(payload.length()), reinterpret_cast<void*>(const_cast<char*>(payload.data())), qos, retain);
 }
 
 void Client::clear_will()
 {
-    mosquitto_will_clear(_con_helper._token);
+    if (!connected()) {
+        return;
+    }
+    mosquitto_will_clear(_con_helper->_token);
 }
 
 void Client::set_login_info(std::string username, std::string password)
 {
-    mosquitto_username_pw_set(_con_helper._token, username.data(), password.data());
+    if (!connected()) {
+        return;
+    }
+    mosquitto_username_pw_set(_con_helper->_token, username.data(), password.data());
 }
 
 std::shared_ptr<Subscription> Client::subscribe(std::string pattern, QOS qos)
 {
-    std::lock_guard<std::mutex> lock(_con_helper._sub_mutex);
     std::shared_ptr<Subscription> ptr;
+
+    if (!connected()) {
+        throw std::runtime_error("Tried to subscribe to " + pattern + " but the client is not connected to any broker");
+    }
+
+    std::lock_guard<std::mutex> lock(_con_helper->_sub_mutex);
+
     if (mosquitto_sub_topic_check(pattern.data()) == MOSQ_ERR_SUCCESS) {
-        mosquitto_subscribe(_con_helper._token, nullptr, pattern.data(), qos);
-        for (auto s : _con_helper._subscriptions) {
+        mosquitto_subscribe(_con_helper->_token, nullptr, pattern.data(), qos);
+        for (auto s : _con_helper->_subscriptions) {
             if (s->pattern() == pattern) {
                 return s;
             }
         }
         ptr = std::make_shared<Subscription>(pattern);
-        _con_helper._subscriptions.push_back(ptr);
+        _con_helper->_subscriptions.push_back(ptr);
     }
     return ptr;
 }
 
 void Client::publish(std::string topic, const void* payload, std::size_t payload_len, QOS qos, bool retain)
 {
-    mosquitto_publish(_con_helper._token, nullptr, topic.c_str(), static_cast<int>(payload_len), payload, qos, retain);
+    if (!connected()) {
+        return;
+    }
+    mosquitto_publish(_con_helper->_token, nullptr, topic.c_str(), static_cast<int>(payload_len), payload, qos, retain);
 }
 }
