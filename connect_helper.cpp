@@ -71,7 +71,9 @@ ConnectHelper::~ConnectHelper()
 
 bool ConnectHelper::connect(std::string hostname, int port)
 {
-    disconnect();
+    if (_status == CONNECTED) {
+        return true;
+    }
 
     std::unique_lock<std::mutex> lock(_connect_mutex);
     bool res = mosquitto_connect(_token, hostname.c_str(), port, 1) == MOSQ_ERR_SUCCESS;
