@@ -50,10 +50,14 @@ private:
 
     std::thread _thread;
     std::atomic<bool> _thread_condition;
-    std::condition_variable _cv;
+
+    std::mutex _connect_mutex;
+    std::condition_variable _connect_cv;
 
     std::queue<Message> _queue;
     std::mutex _queue_mutex;
+    std::condition_variable _queue_cv;
+
     std::vector<std::shared_ptr<Subscription>> _subscriptions;
     std::mutex _sub_mutex;
 };
