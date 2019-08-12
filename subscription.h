@@ -10,15 +10,15 @@
 namespace Mosquittopp {
 
 class Subscription {
-    friend class ConnectHelper;
+    friend class SubscriptionFactory;
 
 public:
-    Subscription(std::string pattern);
+    Subscription(mosquitto* token, std::string pattern, int qos);
+    ~Subscription();
 
-    inline std::string pattern()
-    {
-        return _pattern;
-    }
+    const mosquitto* token();
+    std::string pattern();
+    int qos();
 
     template <typename T>
     inline bool add_callback(T* object, void (T::*callback)(Message))
@@ -26,18 +26,16 @@ public:
         return add_callback(object, std::bind(callback, object, std::placeholders::_1));
     }
 
-    inline bool add_callback(void* object, std::function<void(Message)> callback)
-    {
-        std::lock_guard<std::mutex> lock(_mtx);
-        return _callbacks.insert({ object, callback }).second;
-    }
-
+    bool add_callback(void* object, std::function<void(Message)> callback);
     void remove_callbacks(void* object);
 
 private:
     void handle_message_received(Message msg);
 
+    mosquitto* _token;
     std::string _pattern;
+    int _qos;
+
     std::map<void*, std::function<void(Message)>> _callbacks;
     std::mutex _mtx;
 };

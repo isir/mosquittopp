@@ -9,7 +9,6 @@
 #include <mutex>
 #include <queue>
 #include <thread>
-#include <vector>
 
 namespace Mosquittopp {
 
@@ -44,7 +43,7 @@ private:
 
     void handle_message_received(Message msg);
 
-    struct mosquitto* _token;
+    mosquitto* _token;
 
     Status _status;
 
@@ -57,9 +56,6 @@ private:
     std::queue<Message> _queue;
     std::mutex _queue_mutex;
     std::condition_variable _queue_cv;
-
-    std::vector<std::shared_ptr<Subscription>> _subscriptions;
-    std::mutex _sub_mutex;
 };
 
 }

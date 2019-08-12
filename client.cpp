@@ -1,5 +1,6 @@
 #include "client.h"
 #include "connect_factory.h"
+#include "subscription_factory.h"
 
 namespace Mosquittopp {
 
@@ -67,25 +68,7 @@ void Client::set_login_info(std::string username, std::string password)
 
 std::shared_ptr<Subscription> Client::subscribe(std::string pattern, QOS qos)
 {
-    std::shared_ptr<Subscription> ptr;
-
-    if (!connected()) {
-        throw std::runtime_error("Tried to subscribe to " + pattern + " but the client is not connected to any broker");
-    }
-
-    std::lock_guard<std::mutex> lock(_con_helper->_sub_mutex);
-
-    if (mosquitto_sub_topic_check(pattern.data()) == MOSQ_ERR_SUCCESS) {
-        mosquitto_subscribe(_con_helper->_token, nullptr, pattern.data(), qos);
-        for (auto s : _con_helper->_subscriptions) {
-            if (s->pattern() == pattern) {
-                return s;
-            }
-        }
-        ptr = std::make_shared<Subscription>(pattern);
-        _con_helper->_subscriptions.push_back(ptr);
-    }
-    return ptr;
+    return SubscriptionFactory::get(_con_helper->_token, pattern, qos);
 }
 
 void Client::publish(std::string topic, const void* payload, std::size_t payload_len, QOS qos, bool retain)

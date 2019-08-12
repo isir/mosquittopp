@@ -1,4 +1,5 @@
 #include "connect_helper.h"
+#include "subscription_factory.h"
 
 namespace Mosquittopp {
 
@@ -65,6 +66,7 @@ ConnectHelper::~ConnectHelper()
     mosquitto_disconnect(_token);
     mosquitto_loop_stop(_token, false);
     mosquitto_destroy(_token);
+    _token = nullptr;
 
     stop_thread();
 }
@@ -115,21 +117,14 @@ void ConnectHelper::start_thread()
             std::unique_lock<std::mutex> lock(_queue_mutex);
             _queue_cv.wait(lock, [this] { return (_queue.size() > 0) || !_thread_condition; });
 
-            if (_queue.empty()) {
-                continue;
-            }
+            while (!_queue.empty()) {
+                Message msg = _queue.front();
+                _queue.pop();
+                lock.unlock();
 
-            Message msg = _queue.front();
-            _queue.pop();
-            lock.unlock();
+                SubscriptionFactory::handle_message(_token, msg);
 
-            std::lock_guard<std::mutex> lg(_sub_mutex);
-            bool result;
-            for (auto s : _subscriptions) {
-                mosquitto_topic_matches_sub(s->pattern().data(), msg.topic().c_str(), &result);
-                if (result) {
-                    s->handle_message_received(msg);
-                }
+                lock.lock();
             }
         }
     });
