@@ -3,9 +3,9 @@
 
 #include "message.h"
 #include <functional>
-#include <map>
 #include <mutex>
 #include <string>
+#include <vector>
 
 namespace Mosquittopp {
 
@@ -21,12 +21,12 @@ public:
     int qos();
 
     template <typename T>
-    inline bool add_callback(T* object, void (T::*callback)(Message))
+    inline void add_callback(T* object, void (T::*callback)(Message))
     {
-        return add_callback(object, std::bind(callback, object, std::placeholders::_1));
+        add_callback(object, std::bind(callback, object, std::placeholders::_1));
     }
 
-    bool add_callback(void* object, std::function<void(Message)> callback);
+    void add_callback(void* object, std::function<void(Message)> callback);
     void remove_callbacks(void* object);
 
 private:
@@ -36,7 +36,7 @@ private:
     std::string _pattern;
     int _qos;
 
-    std::map<void*, std::function<void(Message)>> _callbacks;
+    std::vector<std::pair<void*, std::function<void(Message)>>> _callbacks;
     std::mutex _mtx;
 };
 

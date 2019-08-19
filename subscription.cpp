@@ -35,16 +35,22 @@ int Subscription::qos()
     return _qos;
 }
 
-bool Subscription::add_callback(void* object, std::function<void(Message)> callback)
+void Subscription::add_callback(void* object, std::function<void(Message)> callback)
 {
     std::lock_guard<std::mutex> lock(_mtx);
-    return _callbacks.insert({ object, callback }).second;
+    _callbacks.push_back({ object, callback });
 }
 
 void Subscription::remove_callbacks(void* object)
 {
     std::lock_guard<std::mutex> lock(_mtx);
-    _callbacks.erase(object);
+    for (auto it = _callbacks.begin(); it < _callbacks.end();) {
+        if (it->first == object) {
+            it = _callbacks.erase(it);
+        } else {
+            ++it;
+        }
+    }
 }
 
 void Subscription::handle_message_received(Message msg)
