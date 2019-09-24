@@ -78,17 +78,21 @@ bool ConnectHelper::connect(std::string hostname, int port)
     }
 
     std::unique_lock<std::mutex> lock(_connect_mutex);
-    bool res = mosquitto_connect(_token, hostname.c_str(), port, 10) == MOSQ_ERR_SUCCESS;
-    if (res) {
+
+    if (mosquitto_connect_async(_token, hostname.c_str(), port, 5) == MOSQ_ERR_SUCCESS) {
         mosquitto_loop_start(_token);
         _connect_cv.wait(lock);
 
         if (status() != CONNECTED) {
+            mosquitto_disconnect(_token);
             mosquitto_loop_stop(_token, false);
             return false;
         }
+
+        return true;
+    } else {
+        throw std::runtime_error("Failed to connect: " + std::to_string(errno));
     }
-    return res;
 }
 
 void ConnectHelper::disconnect()
