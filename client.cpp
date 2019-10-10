@@ -4,8 +4,6 @@
 
 namespace Mosquittopp {
 
-LibraryWrapper Client::_lib_wrapper;
-
 Client::Client()
 {
 }
@@ -16,7 +14,7 @@ Client::~Client()
 
 bool Client::connect(std::string hostname, int port)
 {
-    _con_helper = ConnectFactory::from_identifier(hostname + ":" + std::to_string(port));
+    _con_helper = ConnectFactory::instance().from_identifier(hostname + ":" + std::to_string(port));
     return _con_helper->connect(hostname, port);
 }
 

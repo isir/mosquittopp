@@ -10,13 +10,17 @@ namespace Mosquittopp {
 
 class ConnectFactory {
 public:
-    static std::shared_ptr<ConnectHelper> from_identifier(std::string identifier);
+    static ConnectFactory& instance();
+
+    ~ConnectFactory();
+
+    std::shared_ptr<ConnectHelper> from_identifier(std::string identifier);
 
 private:
     ConnectFactory();
 
-    static std::map<std::string, std::shared_ptr<ConnectHelper>> _helpers;
-    static std::mutex _helpers_mutex;
+    std::map<std::string, std::shared_ptr<ConnectHelper>> _helpers;
+    std::mutex _helpers_mutex;
 };
 
 }

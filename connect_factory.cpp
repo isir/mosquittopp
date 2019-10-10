@@ -2,11 +2,20 @@
 
 namespace Mosquittopp {
 
-std::map<std::string, std::shared_ptr<ConnectHelper>> ConnectFactory::_helpers;
-std::mutex ConnectFactory::_helpers_mutex;
-
 ConnectFactory::ConnectFactory()
 {
+    mosquitto_lib_init();
+}
+
+ConnectFactory::~ConnectFactory()
+{
+    mosquitto_lib_cleanup();
+}
+
+ConnectFactory& ConnectFactory::instance()
+{
+    static ConnectFactory f;
+    return f;
 }
 
 std::shared_ptr<ConnectHelper> ConnectFactory::from_identifier(std::string identifier)

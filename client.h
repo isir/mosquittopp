@@ -3,7 +3,6 @@
 
 #include "connect_helper.h"
 #include "library_version.h"
-#include "library_wrapper.h"
 
 namespace Mosquittopp {
 
@@ -46,8 +45,6 @@ public:
 
 private:
     std::shared_ptr<ConnectHelper> _con_helper;
-
-    static LibraryWrapper _lib_wrapper;
 };
 
 } // namespace Mosquittopp
