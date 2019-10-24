@@ -1,7 +1,7 @@
 #ifndef MOSQUITTO_MESSAGE_H
 #define MOSQUITTO_MESSAGE_H
 
-#include "mosquitto.h"
+#include <mosquitto.h>
 #include <string>
 
 namespace Mosquittopp {

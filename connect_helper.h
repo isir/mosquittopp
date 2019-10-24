@@ -2,7 +2,6 @@
 #define CONNECT_HELPER_H
 
 #include "message.h"
-#include "mosquitto.h"
 #include "subscription.h"
 #include <atomic>
 #include <condition_variable>
