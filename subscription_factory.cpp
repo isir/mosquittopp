@@ -19,6 +19,8 @@ std::shared_ptr<Subscription> SubscriptionFactory::get(mosquitto* token, std::st
             }
         }
         ptr = std::make_shared<Subscription>(token, pattern, qos);
+
+        std::lock_guard<std::mutex> lock(_mutex);
         _subscriptions.push_back(ptr);
     }
     return ptr;
